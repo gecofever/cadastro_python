@@ -1,0 +1,244 @@
+# Armazenamento dos cadastros
+cadastro = [[1, 'Paulo', 'Pereira', '45847462512', '15/02/1989'], [2, 'João', 'Guedes', '56321489941', '23/01/1986'], [3, 'Eli', 'Oliveira', '23410158911', '28/10/1975']]
+
+print(cadastro)
+print('')
+
+def lista_cadastro():
+
+  if cadastro == [ ]:
+     print('Nenhum Cadastro Armazenado')
+  else:
+    for cad in cadastro:
+      print('ID: {}\nNome: {} {}\nCPF: {}\nData Nascimento: {}\n'.format(cad[0], cad[1], cad[2], cad[3], cad[4]))
+
+def remove_cadastro():
+  print('')
+  id = input('Informe o ID do cadastro a remover: ')
+
+  if not id.isdecimal():
+    print('ID invalido, favor informe um numero inteiro!')
+    return
+
+  id = int(id)
+  id_existente = False
+  for cad in cadastro:
+    if cad[0] == id:
+      id_existente = True
+      break
+
+  if id_existente:
+    for i, cad in enumerate(cadastro):
+      if cad[0] == id:
+        del cadastro[i]
+        print('Cadastro Removido')
+        print('\n')
+        break
+
+    for i, cad in enumerate(cadastro):
+      if cad[0] > id:
+        cad[0] = i + 1
+  else:
+    print('ID não existe no cadastro!!')
+
+def trocar_sobrenome(id1, id2):
+  id1 = int(id1)
+  id2 = int(id2)
+  
+  sobrenome1 = None
+  sobrenome2 = None
+
+  id_existente = False
+  for cad in cadastro:
+    if cad[0] == id1:
+      id_existente = True
+      sobrenome1 = cad
+    elif cad[0] == id2:
+      id_existente = True
+      sobrenome2 = cad
+      
+  if id_existente:
+    sobrenome_1 = sobrenome1[2]
+    sobrenome_2 = sobrenome2[2]
+    sobrenome1[2] = sobrenome_2
+    sobrenome2[2] = sobrenome_1
+    print('Sobrenomes trocados')
+
+  else:
+    print('ID não existe no cadastro!!')
+
+
+def alteracao_cpf():
+  id = input('Informe o ID do cadastro que será alterado: ')
+
+  if not id.isdecimal():
+    print('ID invalido, favor informe um numero inteiro!')
+    return
+
+  id = int(id)
+  id_existente = False
+  for cad in cadastro:
+    if cad[0] == id:
+      id_existente = True
+      break
+
+  if id_existente:
+    cpf_alterado = input('Favor, informar novo CPF: ')
+    if len(cpf_alterado) == 11 and cpf_alterado.isdecimal():
+      if (cpf_alterado[8] == '6') or (cpf_alterado[8] == '7') or (cpf_alterado[8] == '8'):
+        print('O sistema não aceita essa região!!')
+        return
+
+      else:
+
+        numeros = [int(digit) for digit in cpf_alterado if digit.isdigit()]
+
+        digito = sum(a*b for a, b in zip(numeros[0:9], range(10, 1, -1)))
+        verificador = (digito * 10 % 11) % 10
+        if numeros[9] != verificador:
+          print('CPF Inexistente')
+          return
+
+        digito = sum(a*b for a, b in zip(numeros[0:10], range(11, 1, -1)))
+        verificador = (digito * 10 % 11) % 10
+        if numeros[10] != verificador:
+          print('CPF Inexistente')
+          return
+        
+        for i, cad in enumerate(cadastro):
+          if cad[0] == id:
+            cad[3] = cpf_alterado
+            print('CPF alterado')
+            print('\n')
+            return
+
+    else:
+      print('Formato errado, digite apenas os 11 digitos!')
+      return
+  else:
+    print('ID não existe no cadastro!!')
+
+def novo_cadastro():
+  print('Dados do novo cadastro')
+  nome = input('Nome: ')
+  sobrenome = input('Sobrenome: ')
+  cpf = input('CPF (Só Numeros): ')
+  if len(cpf) == 11 and cpf.isdecimal():
+    if (cpf[8] == '6') or (cpf[8] == '7') or (cpf[8] == '8'):
+      print('O sistema não aceita essa região!!')
+      return
+    else:
+
+      numeros = [int(digit) for digit in cpf if digit.isdigit()]
+
+      digito = sum(a*b for a, b in zip(numeros[0:9], range(10, 1, -1)))
+      verificador = (digito * 10 % 11) % 10
+      if numeros[9] != verificador:
+        print('CPF Inexistente')
+        return
+
+      digito = sum(a*b for a, b in zip(numeros[0:10], range(11, 1, -1)))
+      verificador = (digito * 10 % 11) % 10
+      if numeros[10] != verificador:
+        print('CPF Inexistente')
+        return
+      
+      nascimento = input('Data de nascimento (formato dd/mm/aaaa): ')
+  else:
+    print('Formato errado, digite apenas os 11 digitos!')
+    return
+  
+  id = input('Digitar ID (opcional): ')
+
+  nome = nome.title()
+  sobrenome = sobrenome.title()
+  
+  if len(nome.split()) == 1 and len(sobrenome.split()) == 1:
+    if id:
+      id = int(id)
+      cadastro_novo = [id, nome, sobrenome, cpf, nascimento]
+    else:
+      indisponivel = None
+      for i in range(1, len(cadastro) + 2):
+        if all(cad[0] != i for cad in cadastro):
+          indisponivel = i
+          break
+      id = indisponivel
+    
+      cadastro_novo = [id, nome, sobrenome, cpf, nascimento]
+
+    if not id in [cad[0] for cad in cadastro]:
+      cadastro.append(cadastro_novo)
+      return
+
+    else:
+      for i, cad in enumerate(cadastro):
+        if cad[0] == id:
+          cadastro.insert(i, cadastro_novo)
+          for j in range(i + 1, len(cadastro)):
+            cadastro[j][0] = cadastro[j][0] + 1
+          return
+        
+        if not id or cad[0] > id:
+          cadastro.insert(i, cadastro_novo)
+          return
+        
+      else:
+        cadastro.append(cadastro_novo)
+
+  else:
+    print('Digite apenas 1 Palavra para o Nome ou Sobrenome!')
+
+def inteiro_menu(msg):
+  ok = False
+  valor = 0
+  while True:
+    opcao = str(input(msg))
+    if opcao.isdecimal() and 1 <= int(opcao) <= 6:
+      valor = int(opcao)
+      ok = True
+    else:
+      print('Erro: entrada inválida')
+    if ok:
+      break
+  return valor
+
+def menu_principal():
+  while True:
+    print('-' * 10)
+    print('Menu')
+    print('-' * 10)
+    print()
+    print('[1] - Inserir novo Cadastro')
+    print('[2] - Alterar CPF')
+    print('[3] - Trocar Sobrenomes')
+    print('[4] - Remover Cadastro')
+    print('[5] - Listar Cadastros')
+    print('[6] - Sair')
+
+    opcao = inteiro_menu('Qual sua Opção: ')
+    if (opcao == 1):
+      novo_cadastro()
+    elif (opcao == 2):
+      alteracao_cpf()
+    elif (opcao == 3):
+      id1 = input('Informe o primeiro ID: ')
+      id2 = input('Informe o segundo ID: ')
+      id1 = str(id1)
+      id2 = str(id2)
+      if not id1.isdecimal():
+        print('ID invalido, favor informe um numero inteiro!')
+        return menu_principal()
+      if not id2.isdecimal():
+        print('ID invalido, favor informe um numero inteiro!')
+        return menu_principal()
+      trocar_sobrenome(id1, id2)
+    elif (opcao == 4):
+      remove_cadastro()
+    elif (opcao == 5):
+      lista_cadastro()
+    elif (opcao == 6):
+      print('Fim do Programa!!')
+      break
+
+menu_principal()
